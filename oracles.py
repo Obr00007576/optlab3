@@ -86,8 +86,8 @@ class BarrierMethodLassoOracle(BaseSmoothOracle):
         hessian_barrier_uu = scipy.sparse.diags(
             1 / (u + x)**2 + 1 / (u - x)**2)
         hessian_xx = self.t * hessian_f_xx + hessian_barrier_xx
-        hessian_xu = np.zeros((x.size, u.size))
-        hessian_ux = np.zeros((u.size, x.size))
+        hessian_xu = np.diag(1 / (u + x)**2 - 1 / (u - x)**2)
+        hessian_ux = hessian_xu
         hessian_uu = hessian_barrier_uu
         return scipy.sparse.bmat([[hessian_xx, hessian_xu], [hessian_ux, hessian_uu]])
 

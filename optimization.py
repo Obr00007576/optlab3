@@ -210,6 +210,8 @@ def barrier_method_lasso(A, b, reg_coef, x_0, u_0, tolerance=1e-5,
             alpha = lst.line_search(oracle, xu, delta_xu)
             xu += alpha * delta_xu
             x, u = xu[:x.size], xu[x.size:]
+            if np.any(np.abs(x)>u):
+                print('asd')
             if np.linalg.norm(grad_xu)**2 <= tolerance_inner * np.linalg.norm(grad_xu0)**2:
                 break
 
@@ -225,7 +227,7 @@ def barrier_method_lasso(A, b, reg_coef, x_0, u_0, tolerance=1e-5,
                 history['x'].append(x.copy())
             if gap <= tolerance:
                 return (x, u), "success", history
-
+ 
         t *= gamma
         if gap <= tolerance:
             return (x, u), "success", history

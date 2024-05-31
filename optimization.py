@@ -2,10 +2,12 @@ from collections import defaultdict
 import numpy as np
 import scipy.sparse as sp
 import scipy
-from numpy.linalg import norm, solve
 from time import time
 from scipy.optimize import line_search
 import datetime
+
+import scipy.sparse
+import scipy.sparse.linalg
 from oracles import lasso_duality_gap, BarrierMethodLassoOracle
 
 
@@ -210,13 +212,10 @@ def barrier_method_lasso(A, b, reg_coef, x_0, u_0, tolerance=1e-5,
             alpha = lst.line_search(oracle, xu, delta_xu)
             xu += alpha * delta_xu
             x, u = xu[:x.size], xu[x.size:]
-            if np.any(np.abs(x)>u):
-                print('asd')
             if np.linalg.norm(grad_xu)**2 <= tolerance_inner * np.linalg.norm(grad_xu0)**2:
                 break
 
         gap = lasso_duality_gap(x, A @ x - b, A.T @ (A @ x - b), b, reg_coef)
-        print(gap, t)
         if trace:
             current_time = time() - start_time
             history['time'].append(current_time)
@@ -227,7 +226,7 @@ def barrier_method_lasso(A, b, reg_coef, x_0, u_0, tolerance=1e-5,
                 history['x'].append(x.copy())
             if gap <= tolerance:
                 return (x, u), "success", history
- 
+
         t *= gamma
         if gap <= tolerance:
             return (x, u), "success", history
